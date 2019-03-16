@@ -37,7 +37,7 @@ public class Tratamento implements Runnable{
 	
 	@Override
 	public void run(){
-		// Get Request from client
+		// Recebe pedido do cliente
 				String requestString;
 				try{
 					requestString = proxyToClientBr.readLine();
