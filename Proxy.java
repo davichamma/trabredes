@@ -23,12 +23,12 @@ public class Proxy implements Runnable{
 	private volatile boolean running = true;
 	static HashMap<String, File> cache;
 	static HashMap<String, String> blockedSites;
-	static ArrayList<Thread> threadsAbertas;
+	static ArrayList<Thread> openThreads;
 	
 	public Proxy(int porta) {
 		cache = new HashMap<>();
 		//a fim de identificar as threads criaremos uma array
-		threadsAbertas = new ArrayList<>();
+		openThreads = new ArrayList<>();
 		new Thread(this).start();
 		try {
 			serverSocket = new ServerSocket(porta);
@@ -50,24 +50,24 @@ public class Proxy implements Runnable{
 				//cria o socket do servidor
 				Socket sockServ = serverSocket.accept();
 				//cria uma thread para tratar os requisitos desse socket
-				Thread trata = new Thread(new Tratamento(sockServ));
-				threadsAbertas.add(trata);
+				Thread trata = new Thread(new Handle(sockServ));
+				openThreads.add(trata);
 				trata.start();
-			}catch(SocketException e) {
+			}catch(SocketException sockException) {
 				System.out.println("Servidor fechado");
-			}catch(IOException e) {
-				e.printStackTrace();
+			}catch(IOException exception) {
+				exception.printStackTrace();
 			}
 			
 		}
 	}
 	//Busca um arquivo na cache
-	public static File getCachedPage(String url){
+	public static File buscaCache(String url){
 		return cache.get(url); //url é uma string a qual possui um arquivo na hash
 	}
 	//Adiciona arquivo na cache
-	public static void addCachedPage(String urlString, File fileToCache){
-		cache.put(urlString, fileToCache);
+	public static void addCache(String urlString, File arquivo){
+		cache.put(urlString, arquivo);
 	}
 	@Override
 	public void run() {
@@ -82,8 +82,3 @@ public class Proxy implements Runnable{
 		sc.close();
 	}
 }
-
-
-
-
-
